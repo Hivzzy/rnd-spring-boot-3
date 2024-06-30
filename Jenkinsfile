@@ -51,7 +51,7 @@ pipeline {
         stage ('Docker Run') {
             steps {
                 script {
-                    bat 'docker run -d --name rnd-springboot-3.0 -p 8090:8080 Hivzzy/rnd-springboot-3.0'
+                    bat 'docker run -d --name rnd-springboot-3.0 -p 8099:8080 Hivzzy/rnd-springboot-3.0'
                     echo 'Docker Run Completed'
                 }
             }
