@@ -43,7 +43,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'docker-file-pwd', variable: 'dockerhub-password')]) {
                         bat ''' docker login -u habbanma@gmail.com -p "%dockerhub-password%" '''
                     }
-                    bat 'docker push Hivzzy/rnd-springboot-3.0'
+                    bat 'docker push hivzzy/rnd-springboot-3.0'
                 }
             }
         }
