@@ -40,7 +40,7 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'docker-file-pwd', variable: 'docker-file-password')]) {
+                    withCredentials([string(credentialsId: 'docker-file-pwd', variable: 'dockerhub-password')]) {
                         bat ''' docker login -u Hivzzy -p "%dockerhub-password%" '''
                     }
                     bat 'docker push Hivzzy/rnd-springboot-3.0'
