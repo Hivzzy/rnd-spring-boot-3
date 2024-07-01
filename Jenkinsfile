@@ -5,8 +5,9 @@ pipeline {
     }
 
     environment {
-        TEXT_SUCCESS_BUILD = 'Build Successful!'
-        TEXT_FAILURE_BUILD = 'Build Failed!'
+        BUILD_NUMBER_ENV = "${env.BUILD_NUMBER}"
+        TEXT_SUCCESS_BUILD = "[#${env.BUILD_NUMBER}] Project Name : ${JOB_NAME} is Success"
+        TEXT_FAILURE_BUILD = "[#${env.BUILD_NUMBER}] Project Name : ${JOB_NAME} is Failure"
     }
 
     stages {
@@ -21,7 +22,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     bat 'mvn clean package'
-                    bat '''mvn clean verify sonar:sonar -Dsonar.projectKey=rnd-springboot-3.0 -Dsonar.projectName='rnd-springboot-3.0' -Dsonar.host.url=http://localhost:9000'''
+                    bat ''' mvn clean verify sonar:sonar -Dsonar.projectKey=rnd-springboot-3.0 -Dsonar.projectName='rnd-springboot-3.0' -Dsonar.host.url=http://localhost:9000 '''
                     echo 'SonarQube Analysis Completed'
                 }
             }
@@ -48,14 +49,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker-file-pwd', variable: 'dockerhub-password')]) {
-                        bat '''docker login -u habbanma@gmail.com -p "%dockerhub-password%"'''
+                        bat ''' docker login -u habbanma@gmail.com -p "%dockerhub-password%" '''
                     }
                     bat 'docker push hivzzy/rnd-springboot-3.0'
                 }
             }
         }
 
-        stage('Docker Run') {
+        stage ('Docker Run') {
             steps {
                 script {
                     bat 'docker run -d --name rnd-springboot-3.0 -p 8099:8080 hivzzy/rnd-springboot-3.0'
@@ -63,23 +64,23 @@ pipeline {
                 }
             }
         }
-    }
 
+    }
     post {
         always {
             bat 'docker logout'
         }
         success {
-            script {
-                withCredentials([string(credentialsId: 'telegram-token', variable: 'TOKEN'), string(credentialsId: 'telegram-chat-id', variable: 'CHAT_ID')]) {
-                    bat '''curl -s -X POST https://api.telegram.org/bot"%TOKEN%"/sendMessage -d chat_id="%CHAT_ID%" -d text="%TEXT_SUCCESS_BUILD%"'''
+                    script{
+                         withCredentials([string(credentialsId: 'telegram-token', variable: 'TOKEN'), string(credentialsId: 'telegram-chat-id', variable: 'CHAT_ID')]) {
+                            bat ''' curl -s -X POST https://api.telegram.org/bot"%TOKEN%"/sendMessage -d chat_id="%CHAT_ID%" -d text="%TEXT_SUCCESS_BUILD%" '''
+                         }
+                    }
                 }
-            }
-        }
         failure {
-            script {
+            script{
                 withCredentials([string(credentialsId: 'telegram-token', variable: 'TOKEN'), string(credentialsId: 'telegram-chat-id', variable: 'CHAT_ID')]) {
-                    bat '''curl -s -X POST https://api.telegram.org/bot"%TOKEN%"/sendMessage -d chat_id="%CHAT_ID%" -d text="%TEXT_FAILURE_BUILD%"'''
+                    bat ''' curl -s -X POST https://api.telegram.org/bot"%TOKEN%"/sendMessage -d chat_id="%CHAT_ID%" -d text="%TEXT_FAILURE_BUILD%" '''
                 }
             }
         }
