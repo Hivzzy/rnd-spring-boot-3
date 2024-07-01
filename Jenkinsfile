@@ -39,8 +39,8 @@ pipeline {
                 script {
                     bat 'docker build -t hivzzy/rnd-springboot-3.0 .'
                     echo 'Build Docker Image Completed'
-                    // Menambahkan perintah yang salah untuk menyebabkan kegagalan
-                    bat 'invalid-command-causing-failure'
+                    // // Menambahkan perintah yang salah untuk menyebabkan kegagalan
+                    // bat 'invalid-command-causing-failure'
                 }
             }
         }
